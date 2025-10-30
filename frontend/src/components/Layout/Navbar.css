@@ -31,6 +31,14 @@ html.dark-mode .navbar {
   margin: 0;
   letter-spacing: -0.5px;
   color: #1d1d1f;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-title i {
+  color: #667eea;
+  font-size: 1.2em;
 }
 
 html.dark-mode .navbar-title {
@@ -50,8 +58,11 @@ html.dark-mode .navbar-title {
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 1.2em;
+  font-size: 1.1em;
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 html.dark-mode .btn-theme {
@@ -60,33 +71,58 @@ html.dark-mode .btn-theme {
   color: #f5f5f7;
 }
 
-.btn-theme:hover {
+.btn-theme:hover:not(:disabled) {
   background: #e8e8eb;
   border-color: #a1a1a6;
+  transform: scale(1.05);
 }
 
-html.dark-mode .btn-theme:hover {
+html.dark-mode .btn-theme:hover:not(:disabled) {
   background: #5f5f63;
   border-color: #86868b;
 }
 
+.btn-theme:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn-logout-nav {
-  background: #7c3aed;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border: 1px solid #7c3aed;
-  padding: 8px 20px;
+  border: none;
+  padding: 8px 18px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
   font-size: 0.95em;
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.btn-logout-nav:hover {
-  background: #6d28d9;
-  border-color: #6d28d9;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
-  transform: translateY(-1px);
+.btn-logout-nav:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-logout-nav:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.btn-logout-nav i.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
@@ -97,5 +133,9 @@ html.dark-mode .btn-theme:hover {
   .btn-logout-nav {
     padding: 6px 12px;
     font-size: 0.9em;
+  }
+
+  .btn-logout-nav span {
+    display: none;
   }
 }

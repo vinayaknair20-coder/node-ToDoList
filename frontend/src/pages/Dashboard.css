@@ -525,3 +525,46 @@
   color: var(--warning) !important;
   border: 2px solid var(--warning);
 }
+.alert i {
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
+.time-badge i,
+.time-status i {
+  margin-right: 6px;
+}
+
+.task-status i {
+  margin-right: 4px;
+  font-size: 0.9em;
+}
+
+.task-date i {
+  margin-right: 6px;
+}
+
+.btn-add-task i,
+.btn-complete i,
+.btn-undo i,
+.btn-delete-task i {
+  margin-right: 6px;
+}
+
+.btn-add-task i.fa-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.time-conflict-warning i {
+  margin-right: 8px;
+  color: #f59e0b;
+}

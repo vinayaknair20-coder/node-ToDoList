@@ -28,13 +28,13 @@ const Dashboard = () => {
 
   const handleAddTask = async () => {
     if (!title.trim()) {
-      setMessage('❌ Please enter a task title');
+      setMessage('error-Please enter a task title');
       return;
     }
 
     // Check for time conflict
     if (isTimeConflict(scheduledTime)) {
-      setMessage(`❌ You already have a task at ${scheduledTime}. Cannot create two tasks at the same time!`);
+      setMessage(`error-You already have a task at ${scheduledTime}. Cannot create two tasks at the same time!`);
       return;
     }
 
@@ -43,9 +43,9 @@ const Dashboard = () => {
       setTitle('');
       setDescription('');
       setScheduledTime('09:00');
-      setMessage('✅ Task scheduled successfully!');
+      setMessage('success-Task scheduled successfully!');
     } else {
-      setMessage('❌ Failed to create task');
+      setMessage('error-Failed to create task');
     }
   };
 
@@ -53,25 +53,25 @@ const Dashboard = () => {
     const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
     const success = await updateTask(taskId, { status: newStatus });
     if (success) {
-      setMessage(`✅ Task marked as ${newStatus}!`);
+      setMessage(`success-Task marked as ${newStatus}!`);
     }
   };
 
   const handleDeleteTask = (id) => {
-    if (window.confirm('Are you sure?')) {
+    if (window.confirm('Are you sure you want to delete this task?')) {
       deleteTask(id);
-      setMessage('✅ Task deleted!');
+      setMessage('success-Task deleted!');
     }
   };
 
   const getTimeStatus = (scheduledTime) => {
     if (!scheduledTime || typeof scheduledTime !== 'string') {
-      return { status: 'unknown', label: 'No time set', color: 'future' };
+      return { status: 'unknown', label: 'No time set', color: 'future', icon: 'fa-clock' };
     }
 
     const parts = scheduledTime.split(':');
     if (parts.length !== 2) {
-      return { status: 'unknown', label: 'Invalid time', color: 'future' };
+      return { status: 'unknown', label: 'Invalid time', color: 'future', icon: 'fa-clock' };
     }
 
     const [hours, minutes] = parts.map(Number);
@@ -82,13 +82,13 @@ const Dashboard = () => {
     const diffMinutes = (taskTime - now) / (1000 * 60);
 
     if (diffMinutes < 0) {
-      return { status: 'passed', label: '⏰ Time passed', color: 'passed' };
+      return { status: 'passed', label: 'Time passed', color: 'passed', icon: 'fa-hourglass-end' };
     } else if (diffMinutes <= 5) {
-      return { status: 'now', label: '🔔 Do it now!', color: 'now' };
+      return { status: 'now', label: 'Do it now!', color: 'now', icon: 'fa-fire' };
     } else if (diffMinutes <= 60) {
-      return { status: 'upcoming', label: `⏳ ${Math.round(diffMinutes)}m away`, color: 'upcoming' };
+      return { status: 'upcoming', label: `${Math.round(diffMinutes)}m away`, color: 'upcoming', icon: 'fa-hourglass-half' };
     } else {
-      return { status: 'future', label: `${Math.round(diffMinutes / 60)}h away`, color: 'future' };
+      return { status: 'future', label: `${Math.round(diffMinutes / 60)}h away`, color: 'future', icon: 'fa-hourglass-start' };
     }
   };
 
@@ -98,15 +98,30 @@ const Dashboard = () => {
     return timeA - timeB;
   });
 
+  const getMessageType = (msg) => {
+    return msg.startsWith('error-') ? 'alert-error' : 'alert-success';
+  };
+
+  const getMessageText = (msg) => {
+    return msg.replace('error-', '').replace('success-', '');
+  };
+
   return (
     <Layout>
       <div className="dashboard">
         <div className="dashboard-header">
-          <h1>📋 Your Tasks</h1>
+          <h1>
+            <i className="fas fa-list-check"></i> Your Tasks
+          </h1>
           <p>Schedule your daily tasks efficiently</p>
         </div>
 
-        {message && <div className={`alert ${message.includes('❌') ? 'alert-error' : 'alert-success'}`}>{message}</div>}
+        {message && (
+          <div className={`alert ${getMessageType(message)}`}>
+            <i className={`fas ${getMessageType(message) === 'alert-error' ? 'fa-exclamation-circle' : 'fa-check-circle'}`}></i>
+            {getMessageText(message)}
+          </div>
+        )}
 
         {/* Add Task Form */}
         <div className="add-task-section">
@@ -127,7 +142,9 @@ const Dashboard = () => {
             />
             
             <div className="time-picker-box">
-              <label>🕐 Scheduled Time</label>
+              <label>
+                <i className="fas fa-clock"></i> Scheduled Time
+              </label>
               <input
                 type="time"
                 value={scheduledTime}
@@ -136,13 +153,13 @@ const Dashboard = () => {
               />
               <span className={`time-display ${isTimeConflict(scheduledTime) ? 'conflict' : ''}`}>
                 {scheduledTime}
-                {isTimeConflict(scheduledTime) && ' ⚠️'}
+                {isTimeConflict(scheduledTime) && <i className="fas fa-exclamation-triangle"></i>}
               </span>
             </div>
 
             {isTimeConflict(scheduledTime) && (
               <div className="time-conflict-warning">
-                ⚠️ This time slot is already taken! Choose a different time.
+                <i className="fas fa-exclamation-triangle"></i> This time slot is already taken! Choose a different time.
               </div>
             )}
 
@@ -151,7 +168,8 @@ const Dashboard = () => {
               disabled={loading || !title.trim() || isTimeConflict(scheduledTime)}
               className="btn-add-task"
             >
-              {loading ? '⏳' : '➕'} Schedule Task
+              <i className={`fas ${loading ? 'fa-spinner fa-spin' : 'fa-plus'}`}></i>
+              Schedule Task
             </button>
           </div>
         </div>
@@ -165,7 +183,7 @@ const Dashboard = () => {
             </div>
           ) : tasks.length === 0 ? (
             <div className="empty-state">
-              <p className="empty-icon">📭</p>
+              <i className="fas fa-inbox empty-icon"></i>
               <h2>No scheduled tasks</h2>
               <p>Schedule your first task to get started!</p>
             </div>
@@ -194,7 +212,8 @@ const Dashboard = () => {
                         </h3>
                       </div>
                       <span className={`task-status ${task.status}`}>
-                        {isCompleted ? '✅ Completed' : '⏳ Pending'}
+                        <i className={`fas ${isCompleted ? 'fa-check-circle' : 'fa-clock'}`}></i>
+                        {isCompleted ? 'Completed' : 'Pending'}
                       </span>
                     </div>
                     
@@ -206,6 +225,7 @@ const Dashboard = () => {
 
                     <div className="task-time-display">
                       <div className={`time-badge ${timeStatus.color}`}>
+                        <i className={`fas ${timeStatus.icon}`}></i>
                         <strong>{displayTime}</strong>
                       </div>
                       <div className={`time-status ${timeStatus.color}`}>
@@ -215,22 +235,26 @@ const Dashboard = () => {
 
                     <div className="task-footer">
                       <small className="task-date">
-                        📅 {new Date(task.createdAt).toLocaleDateString()}
+                        <i className="fas fa-calendar-alt"></i>
+                        {new Date(task.createdAt).toLocaleDateString()}
                       </small>
                       <div className="task-actions">
                         <button
                           onClick={() => handleToggleStatus(task._id, task.status)}
                           className={`btn-status ${isCompleted ? 'btn-undo' : 'btn-complete'}`}
                           disabled={loading}
+                          title={isCompleted ? 'Undo' : 'Mark as done'}
                         >
-                          {isCompleted ? '↩️ Undo' : '✓ Done'}
+                          <i className={`fas ${isCompleted ? 'fa-undo' : 'fa-check'}`}></i>
+                          {isCompleted ? 'Undo' : 'Done'}
                         </button>
                         <button
                           onClick={() => handleDeleteTask(task._id)}
                           className="btn-delete-task"
                           disabled={loading}
+                          title="Delete task"
                         >
-                          🗑️ Delete
+                          <i className="fas fa-trash-alt"></i> Delete
                         </button>
                       </div>
                     </div>
