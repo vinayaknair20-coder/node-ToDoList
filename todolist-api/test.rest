@@ -1,0 +1,32 @@
+### Signup User
+POST http://localhost:5000/api/users/signup
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### Login User
+POST http://localhost:5000/api/users/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### Get Tasks (replace TOKEN with actual token from login)
+GET http://localhost:5000/api/tasks
+Authorization: Bearer TOKEN
+
+### Create Task
+POST http://localhost:5000/api/tasks
+Authorization: Bearer TOKEN
+Content-Type: application/json
+
+{
+  "title": "My First Task",
+  "description": "This is a test task"
+}
