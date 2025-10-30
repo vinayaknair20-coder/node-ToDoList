@@ -18,9 +18,6 @@ const Login = () => {
 
   useEffect(() => {
     window.history.replaceState(null, null, '/login');
-    return () => {
-      window.removeEventListener('popstate', () => {});
-    };
   }, []);
 
   const handleChange = (e) => {
@@ -74,8 +71,8 @@ const Login = () => {
 
   return (
     <>
-      <LoginSpinner visible={loading} />
-      
+      <LoginSpinner visible={loading} text="Authenticating..." />
+
       <div className="login-container">
         <div className="login-box">
           <h1 className="login-title">
@@ -85,6 +82,7 @@ const Login = () => {
 
           {message && (
             <div className={`alert ${message.includes('failed') || message.includes('required') ? 'alert-error' : 'alert-success'}`}>
+              <i className={`fas ${message.includes('failed') || message.includes('required') ? 'fa-exclamation-circle' : 'fa-check-circle'}`}></i>
               {message}
             </div>
           )}
@@ -140,17 +138,8 @@ const Login = () => {
             </div>
 
             <button type="submit" className="btn-submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <i className="fas fa-spinner fa-spin"></i>
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <i className={`fas ${isLogin ? 'fa-sign-in-alt' : 'fa-user-plus'}`}></i>
-                  {isLogin ? 'Login' : 'Sign Up'}
-                </>
-              )}
+              <i className={`fas ${isLogin ? 'fa-sign-in-alt' : 'fa-user-plus'}`}></i>
+              {isLogin ? 'Login' : 'Sign Up'}
             </button>
           </form>
 
