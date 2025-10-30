@@ -1,0 +1,217 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: var(--bg-primary, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.4em;
+  color: var(--text-primary, #1d1d1f);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-header i {
+  color: #667eea;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: var(--text-secondary, #86868b);
+  padding: 4px 8px;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.modal-close:hover:not(:disabled) {
+  background: var(--bg-secondary, #f5f5f7);
+  color: var(--text-primary, #1d1d1f);
+}
+
+.modal-close:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-body {
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--text-primary, #1d1d1f);
+  font-size: 0.95em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-group label i {
+  color: #667eea;
+  font-size: 0.9em;
+}
+
+.modal-input,
+.modal-textarea {
+  padding: 12px 14px;
+  border: 1px solid var(--border-color, #d5d5d7);
+  border-radius: 6px;
+  font-size: 1em;
+  font-family: inherit;
+  color: var(--text-primary, #1d1d1f);
+  background: var(--bg-primary, #ffffff);
+  transition: all 0.2s;
+}
+
+html.dark-mode .modal-input,
+html.dark-mode .modal-textarea {
+  background: var(--bg-secondary, #2d2d2f);
+  border-color: var(--border-color, #424245);
+}
+
+.modal-input:focus,
+.modal-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.modal-input:disabled,
+.modal-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  background: var(--bg-secondary, #f5f5f7);
+  justify-content: flex-end;
+}
+
+.btn-modal-cancel,
+.btn-modal-save {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95em;
+}
+
+.btn-modal-cancel {
+  background: var(--bg-primary, #ffffff);
+  color: var(--text-primary, #1d1d1f);
+  border: 1px solid var(--border-color, #d5d5d7);
+}
+
+.btn-modal-cancel:hover:not(:disabled) {
+  background: var(--bg-secondary, #f5f5f7);
+  border-color: var(--text-secondary, #86868b);
+}
+
+.btn-modal-save {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-modal-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-modal-cancel:disabled,
+.btn-modal-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    max-width: 90%;
+    border-radius: 8px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .btn-modal-cancel,
+  .btn-modal-save {
+    width: 100%;
+    justify-content: center;
+  }
+}

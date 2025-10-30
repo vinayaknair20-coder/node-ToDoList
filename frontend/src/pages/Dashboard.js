@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useTasks } from '../hooks/useTasks';
 import Layout from '../components/Layout/Layout';
 import Spinner from '../components/common/Spinner';
+import EditTaskModal from '../components/common/EditTaskModal';
+import StatsCard from '../components/common/StatsCard';
+import SearchFilter from '../components/common/SearchFilter';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -9,6 +12,10 @@ const Dashboard = () => {
   const [description, setDescription] = useState('');
   const [scheduledTime, setScheduledTime] = useState('09:00');
   const [message, setMessage] = useState('');
+  const [editingTask, setEditingTask] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
   const { tasks, loading, fetchTasks, createTask, deleteTask, updateTask } = useTasks();
 
   useEffect(() => {
@@ -64,6 +71,22 @@ const Dashboard = () => {
     }
   };
 
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEditedTask = async (taskId, updatedData) => {
+    const success = await updateTask(taskId, updatedData);
+    if (success) {
+      setMessage('success-Task updated successfully!');
+      setIsEditModalOpen(false);
+      setEditingTask(null);
+    } else {
+      setMessage('error-Failed to update task');
+    }
+  };
+
   const getTimeStatus = (scheduledTime) => {
     if (!scheduledTime || typeof scheduledTime !== 'string') {
       return { status: 'unknown', label: 'No time set', color: 'future', icon: 'fa-clock' };
@@ -98,6 +121,17 @@ const Dashboard = () => {
     return timeA - timeB;
   });
 
+  // Filter tasks by search term and status
+  const filteredTasks = sortedTasks.filter(task => {
+    const matchesSearch = 
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesFilter = filterStatus === 'all' || task.status === filterStatus;
+    
+    return matchesSearch && matchesFilter;
+  });
+
   const getMessageType = (msg) => {
     return msg.startsWith('error-') ? 'alert-error' : 'alert-success';
   };
@@ -122,6 +156,8 @@ const Dashboard = () => {
             {getMessageText(message)}
           </div>
         )}
+
+        {tasks.length > 0 && <StatsCard tasks={tasks} />}
 
         {/* Add Task Form */}
         <div className="add-task-section">
@@ -174,6 +210,16 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Search and Filter */}
+        {tasks.length > 0 && (
+          <SearchFilter
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            filterStatus={filterStatus}
+            onFilterChange={setFilterStatus}
+          />
+        )}
+
         {/* Tasks List */}
         <div className="tasks-section">
           {loading && tasks.length === 0 ? (
@@ -187,9 +233,15 @@ const Dashboard = () => {
               <h2>No scheduled tasks</h2>
               <p>Schedule your first task to get started!</p>
             </div>
+          ) : filteredTasks.length === 0 ? (
+            <div className="empty-state">
+              <i className="fas fa-search empty-icon"></i>
+              <h2>No tasks found</h2>
+              <p>Try adjusting your search or filters</p>
+            </div>
           ) : (
             <div className="tasks-list">
-              {sortedTasks.map((task) => {
+              {filteredTasks.map((task) => {
                 const timeStatus = getTimeStatus(task.scheduledTime);
                 const displayTime = task.scheduledTime || 'No time';
                 const isCompleted = task.status === 'completed';
@@ -240,6 +292,14 @@ const Dashboard = () => {
                       </small>
                       <div className="task-actions">
                         <button
+                          onClick={() => handleEditTask(task)}
+                          className="btn-edit-task"
+                          disabled={loading}
+                          title="Edit task"
+                        >
+                          <i className="fas fa-pencil-alt"></i> Edit
+                        </button>
+                        <button
                           onClick={() => handleToggleStatus(task._id, task.status)}
                           className={`btn-status ${isCompleted ? 'btn-undo' : 'btn-complete'}`}
                           disabled={loading}
@@ -265,6 +325,18 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Edit Task Modal */}
+      <EditTaskModal
+        isOpen={isEditModalOpen}
+        task={editingTask}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingTask(null);
+        }}
+        onSave={handleSaveEditedTask}
+        loading={loading}
+      />
     </Layout>
   );
 };
