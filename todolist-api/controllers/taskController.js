@@ -13,7 +13,7 @@ exports.getTasks = async (req, res) => {
 
 exports.createTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, scheduledTime } = req.body;
     
     if (!title) {
       return res.status(400).json({ message: 'Title required' });
@@ -23,6 +23,7 @@ exports.createTask = async (req, res) => {
       _id: Date.now().toString(),
       title,
       description: description || '',
+      scheduledTime: scheduledTime || '09:00',
       status: 'pending',
       userId: req.userId,
       createdAt: new Date(),
