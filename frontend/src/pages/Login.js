@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useToastContext } from '../hooks/useToastContext';
 import { authAPI } from '../utils/api';
 import Spinner from '../components/common/Spinner';
 import './Login.css';
@@ -11,7 +12,15 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const { login } = useAuth();
+  const { showToast } = useToastContext();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.history.replaceState(null, null, '/login');
+    return () => {
+      window.removeEventListener('popstate', () => {});
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,11 +32,13 @@ const Login = () => {
     
     if (!formData.email || !formData.password) {
       setMessage('❌ Please fill all fields');
+      showToast('Please fill all fields', 'error');
       return;
     }
 
     if (!isLogin && !formData.name) {
       setMessage('❌ Name is required for signup');
+      showToast('Name is required for signup', 'error');
       return;
     }
 
@@ -39,10 +50,24 @@ const Login = () => {
 
       const { token, name, userId } = response.data;
       login({ userId, name }, token);
+      
+      // Show success toast
+      showToast(
+        isLogin 
+          ? `👋 Welcome back, ${name}! 🎉` 
+          : `✨ Welcome ${name}! Account created successfully! 🎊`,
+        'success',
+        3500
+      );
+      
       setMessage(`✅ Welcome ${name}!`);
-      setTimeout(() => navigate('/dashboard'), 500);
+      window.history.replaceState(null, null, '/dashboard');
+      
+      setTimeout(() => navigate('/dashboard', { replace: true }), 500);
     } catch (error) {
-      setMessage(error.response?.data?.message || '❌ Authentication failed');
+      const errorMsg = error.response?.data?.message || '❌ Authentication failed';
+      setMessage(errorMsg);
+      showToast(errorMsg, 'error');
     } finally {
       setLoading(false);
     }
@@ -53,10 +78,14 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1 className="login-title">📝 TaskMaster</h1>
+        <h1 className="login-title">📋 TaskMaster</h1>
         <p className="login-subtitle">Your Personal Task Manager</p>
 
-        {message && <div className={`alert ${message.includes('❌') ? 'alert-error' : 'alert-success'}`}>{message}</div>}
+        {message && (
+          <div className={`alert ${message.includes('❌') ? 'alert-error' : 'alert-success'}`}>
+            {message}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="login-form">
           {!isLogin && (

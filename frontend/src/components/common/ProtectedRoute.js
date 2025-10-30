@@ -1,19 +1,18 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import Spinner from './Spinner';
 
 const ProtectedRoute = ({ children }) => {
-  const { token } = useAuth();
+  const { user } = useAuth();
 
-  if (token === undefined) {
-    return <Spinner />;
-  }
+  console.log('ProtectedRoute - User:', user); // DEBUG
 
-  if (!token) {
+  if (!user) {
+    console.log('No user, redirecting to login'); // DEBUG
     return <Navigate to="/login" replace />;
   }
 
+  console.log('User authenticated, rendering dashboard'); // DEBUG
   return children;
 };
 

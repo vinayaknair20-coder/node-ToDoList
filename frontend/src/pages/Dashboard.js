@@ -21,11 +21,23 @@ const Dashboard = () => {
     return () => clearTimeout(timer);
   }, [message]);
 
+  // Check if time already exists
+  const isTimeConflict = (time) => {
+    return tasks.some(task => task.scheduledTime === time && task.status !== 'completed');
+  };
+
   const handleAddTask = async () => {
     if (!title.trim()) {
       setMessage('❌ Please enter a task title');
       return;
     }
+
+    // Check for time conflict
+    if (isTimeConflict(scheduledTime)) {
+      setMessage(`❌ You already have a task at ${scheduledTime}. Cannot create two tasks at the same time!`);
+      return;
+    }
+
     const success = await createTask(title, description, scheduledTime);
     if (success) {
       setTitle('');
@@ -122,12 +134,21 @@ const Dashboard = () => {
                 onChange={(e) => setScheduledTime(e.target.value)}
                 className="time-picker"
               />
-              <span className="time-display">{scheduledTime}</span>
+              <span className={`time-display ${isTimeConflict(scheduledTime) ? 'conflict' : ''}`}>
+                {scheduledTime}
+                {isTimeConflict(scheduledTime) && ' ⚠️'}
+              </span>
             </div>
+
+            {isTimeConflict(scheduledTime) && (
+              <div className="time-conflict-warning">
+                ⚠️ This time slot is already taken! Choose a different time.
+              </div>
+            )}
 
             <button
               onClick={handleAddTask}
-              disabled={loading || !title.trim()}
+              disabled={loading || !title.trim() || isTimeConflict(scheduledTime)}
               className="btn-add-task"
             >
               {loading ? '⏳' : '➕'} Schedule Task
@@ -183,7 +204,6 @@ const Dashboard = () => {
                       </p>
                     )}
 
-                    {/* Time Display */}
                     <div className="task-time-display">
                       <div className={`time-badge ${timeStatus.color}`}>
                         <strong>{displayTime}</strong>
